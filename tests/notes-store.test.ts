@@ -77,4 +77,16 @@ describe('notes store', () => {
     expect(store.storageExportData).toBe(raw);
     expect(localStorage.getItem(NOTES_STORAGE_KEY)).toBe(raw);
   });
+
+  it('keeps malformed data available for export', () => {
+    const store = useNotesStore();
+    const raw = '{broken';
+    localStorage.setItem(NOTES_STORAGE_KEY, raw);
+
+    store.hydrate();
+
+    expect(store.storageError).toMatch(/повреждены/i);
+    expect(store.storageExportData).toBe(raw);
+    expect(localStorage.getItem(NOTES_STORAGE_KEY)).toBe(raw);
+  });
 });

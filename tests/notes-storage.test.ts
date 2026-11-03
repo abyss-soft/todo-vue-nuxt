@@ -26,7 +26,7 @@ class MemoryStorage {
 }
 
 describe('notes persistence', () => {
-  it('reports and clears malformed note data', () => {
+  it('preserves malformed note data and makes it available for export', () => {
     const storage = new MemoryStorage();
     storage.setItem(NOTES_STORAGE_KEY, '{broken');
 
@@ -34,7 +34,21 @@ describe('notes persistence', () => {
 
     expect(result.value).toEqual([]);
     expect(result.error).toMatch(/повреждены/i);
-    expect(storage.getItem(NOTES_STORAGE_KEY)).toBeNull();
+    expect(result.exportableData).toBe('{broken');
+    expect(storage.getItem(NOTES_STORAGE_KEY)).toBe('{broken');
+  });
+
+  it('makes invalid note structure available for export', () => {
+    const storage = new MemoryStorage();
+    const raw = JSON.stringify({ version: 2, notes: [{ id: 'incomplete' }] });
+    storage.setItem(NOTES_STORAGE_KEY, raw);
+
+    const result = readNotes(storage);
+
+    expect(result.value).toEqual([]);
+    expect(result.error).toBe('Структура сохранённых заметок повреждена.');
+    expect(result.exportableData).toBe(raw);
+    expect(storage.getItem(NOTES_STORAGE_KEY)).toBe(raw);
   });
 
   it('preserves data written with the current schema version', () => {

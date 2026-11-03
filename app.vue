@@ -12,7 +12,7 @@ function exportStorageData(): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'daymark-notes-unsupported-version.json';
+  link.download = 'daymark-notes-recovery.json';
   document.body.append(link);
   link.click();
   link.remove();

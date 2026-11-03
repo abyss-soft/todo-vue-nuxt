@@ -9,7 +9,11 @@ import {
 } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { createNote } from '~/domain/note/factory';
-import { draftStorageKey, writeNotes } from '~/services/storage/notes-storage';
+import {
+  draftStorageKey,
+  NOTES_STORAGE_KEY,
+  writeNotes,
+} from '~/services/storage/notes-storage';
 import { useNotesStore } from '~/stores/notes';
 import { useNoteEditor } from '~/composables/useNoteEditor';
 
@@ -89,6 +93,42 @@ describe('useNoteEditor workflow', () => {
     editor.setTitle('Third version');
     expect(await editor.save()).toBe(true);
     expect(useNotesStore().findNote(savedId)?.title).toBe('Third version');
+  });
+
+  it('removes a saved draft when undo returns the note to its initial state', async () => {
+    vi.useFakeTimers();
+    const { editor } = mountEditor('new');
+    const key = draftStorageKey('test-tab', 'new');
+
+    editor.setTitle('Temporary title');
+    await vi.advanceTimersByTimeAsync(700);
+    expect(localStorage.getItem(key)).not.toBeNull();
+
+    editor.undo();
+    await vi.advanceTimersByTimeAsync(700);
+
+    expect(editor.isDirty.value).toBe(false);
+    expect(localStorage.getItem(key)).toBeNull();
+  });
+
+  it('keeps damaged note data exportable after successfully saving a draft', async () => {
+    vi.useFakeTimers();
+    const store = useNotesStore();
+    const raw = '{broken';
+    localStorage.setItem(NOTES_STORAGE_KEY, raw);
+    store.hydrate();
+    const storageError = store.storageError;
+
+    const { editor } = mountEditor('new');
+    editor.setTitle('Draft while storage is damaged');
+    await vi.advanceTimersByTimeAsync(700);
+
+    expect(store.storageError).toBe(storageError);
+    expect(store.storageExportData).toBe(raw);
+    expect(localStorage.getItem(NOTES_STORAGE_KEY)).toBe(raw);
+    expect(
+      localStorage.getItem(draftStorageKey('test-tab', 'new')),
+    ).not.toBeNull();
   });
 
   it('detects an update from another tab and offers reload or recovery', async () => {

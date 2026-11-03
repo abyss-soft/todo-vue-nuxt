@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
     else state.element.setAttribute('aria-hidden', state.wasAriaHidden);
   }
 
-  void nextTick().then(() => {
+  nextTick().then(() => {
     if (
       previouslyFocused?.isConnected &&
       !previouslyFocused.closest('[inert]')

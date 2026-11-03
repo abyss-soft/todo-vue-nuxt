@@ -59,11 +59,16 @@ export function parseNotes(raw: string): NotesReadResult {
     return {
       value: [],
       error: 'Данные заметок повреждены и не могут быть прочитаны.',
+      exportableData: raw,
     };
   }
 
   if (!isRecord(parsed)) {
-    return { value: [], error: 'Формат сохранённых заметок не распознан.' };
+    return {
+      value: [],
+      error: 'Формат сохранённых заметок не распознан.',
+      exportableData: raw,
+    };
   }
 
   if (parsed.version !== NOTES_SCHEMA_VERSION) {
@@ -75,7 +80,11 @@ export function parseNotes(raw: string): NotesReadResult {
   }
 
   if (!Array.isArray(parsed.notes) || !parsed.notes.every(isNote)) {
-    return { value: [], error: 'Структура сохранённых заметок повреждена.' };
+    return {
+      value: [],
+      error: 'Структура сохранённых заметок повреждена.',
+      exportableData: raw,
+    };
   }
 
   return { value: parsed.notes, error: null };
@@ -113,22 +122,7 @@ export function readNotes(
     const raw = storage.getItem(NOTES_STORAGE_KEY);
     if (raw === null) return { value: [], error: null };
 
-    const result = parseNotes(raw);
-    if (
-      result.error &&
-      result.error !== 'Версия хранилища заметок не поддерживается.'
-    ) {
-      try {
-        storage.removeItem(NOTES_STORAGE_KEY);
-      } catch {
-        return {
-          ...result,
-          error: `${result.error} Повреждённую запись не удалось очистить.`,
-        };
-      }
-    }
-
-    return result;
+    return parseNotes(raw);
   } catch {
     return {
       value: [],

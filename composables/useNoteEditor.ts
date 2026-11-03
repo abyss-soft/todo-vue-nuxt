@@ -116,8 +116,13 @@ export function useNoteEditor(routeId: Ref<string>) {
     if (draftTimer) clearTimeout(draftTimer);
     draftTimer = undefined;
 
-    if (!note.value || !isDirty.value || pendingDraft.value || !tabId.value)
+    if (!note.value || pendingDraft.value || !tabId.value) return;
+
+    if (!isDirty.value) {
+      const error = removeDraft(tabId.value, routeKey.value);
+      if (error) store.storageError = error;
       return;
+    }
 
     const isSavedNote =
       note.value.id === routeId.value && routeId.value !== 'new';
@@ -129,7 +134,8 @@ export function useNoteEditor(routeId: Ref<string>) {
       savedAt: new Date().toISOString(),
     };
     const error = writeDraft(tabId.value, routeKey.value, draft);
-    store.storageError = error;
+    if (error) store.storageError = error;
+    else if (store.storageExportData === null) store.storageError = null;
   }
 
   function queueDraftSave(): void {
