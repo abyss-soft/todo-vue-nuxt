@@ -2,6 +2,7 @@
   "name": "todo-notes",
   "private": true,
   "type": "module",
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",

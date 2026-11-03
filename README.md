@@ -1,75 +1,53 @@
-# Nuxt Minimal Starter
+# Daymark
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Небольшое SPA для заметок со списками дел. Интерфейс на Nuxt 3, Vue Composition API, TypeScript и SCSS; состояние хранится в Pinia. UI-библиотеки не используются.
 
-## Setup
+## Возможности
 
-Make sure to install dependencies:
+- Главная страница со списком заметок и кратким превью задач.
+- Создание и редактирование заметок, добавление, изменение, отметка и удаление задач.
+- Подтверждение удаления и отмены редактирования в модальных окнах.
+- Отмена и повтор изменений кнопками или `Ctrl+Z` и `Ctrl+Shift+Z` (`Cmd` на macOS).
+- Автосохранение черновика во время редактирования и предложение восстановить его после перезагрузки.
+- Хранение заметок в `localStorage`; изменения сохраняются по кнопке, а не при каждом вводе.
+- Обработка устаревшей ссылки на заметку и изменений из другой вкладки.
 
-```bash
-# npm
-npm install
+История изменений реализована вручную: ввод в одном поле объединяется в один шаг, отдельные действия со списком записываются сразу. Хранятся обратимые изменения, а не копии заметки; доступно до 50 шагов.
 
-# pnpm
-pnpm install
+## Запуск локально
 
-# yarn
-yarn install
+Нужны Node.js 22 и Yarn 1.22.22. Если Corepack ещё не включён:
 
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
+```sh
+corepack enable
+yarn install --frozen-lockfile
 yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+Приложение будет доступно по адресу `http://localhost:3000`.
 
-Build the application for production:
+## Docker
 
-```bash
-# npm
-npm run build
+Сборка и запуск:
 
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+```sh
+docker compose up --build
 ```
 
-Locally preview production build:
+Откройте `http://localhost:3000`. Чтобы остановить контейнеры, выполните:
 
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+```sh
+docker compose down
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Проверки
+
+```sh
+yarn test
+yarn typecheck
+yarn lint
+yarn lint:styles
+yarn format:check
+```
+
+Тесты Vitest проверяют логику истории, Pinia store, хранилища и редактора. Они запускаются в `jsdom`.
