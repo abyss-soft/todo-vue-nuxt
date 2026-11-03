@@ -125,7 +125,7 @@ export class NoteHistory {
     this.push(patch);
   }
 
-  flushTextChange(note: Note): void {
+  flushTextChange(): void {
     const patch = this.pendingText;
     this.pendingText = null;
     if (!patch || patch.before === patch.after) return;
