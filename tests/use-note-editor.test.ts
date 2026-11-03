@@ -48,7 +48,7 @@ describe('useNoteEditor workflow', () => {
   beforeEach(() => {
     localStorage.clear();
     mountedApps = [];
-    routerPush = vi.fn(async () => undefined);
+    routerPush = vi.fn(() => undefined);
     setActivePinia(createPinia());
     vi.stubGlobal('useRouter', () => ({ push: routerPush }));
     vi.stubGlobal('useState', (key: string, initializer: () => string) =>

@@ -10,7 +10,7 @@ describe('NoteHistory', () => {
     history.setTitle(note, 'Pla');
     history.setTitle(note, 'Plan');
     history.setTitle(note, 'Plans for the week');
-    history.flushTextChange(note);
+    history.flushTextChange();
 
     expect(note.title).toBe('Plans for the week');
     expect(history.undo(note)).toBe(true);
@@ -34,7 +34,7 @@ describe('NoteHistory', () => {
     expect(history.canRedo).toBe(true);
 
     history.setTitle(note, 'A new title');
-    history.flushTextChange(note);
+    history.flushTextChange();
     expect(history.canRedo).toBe(false);
     expect(history.redo(note)).toBe(false);
   });

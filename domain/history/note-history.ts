@@ -68,7 +68,7 @@ export class NoteHistory {
   }
 
   setTitle(note: Note, value: string): void {
-    this.updateText(note, { type: 'title', before: note.title, after: value });
+    this.updateText({ type: 'title', before: note.title, after: value });
     note.title = value;
   }
 
@@ -76,7 +76,7 @@ export class NoteHistory {
     const todo = note.todos.find((item) => item.id === todoId);
     if (!todo) return;
 
-    this.updateText(note, {
+    this.updateText({
       type: 'todo-text',
       todoId,
       before: todo.text,
@@ -86,7 +86,7 @@ export class NoteHistory {
   }
 
   toggleTodo(note: Note, todoId: string): void {
-    this.flushTextChange(note);
+    this.flushTextChange();
     const todo = note.todos.find((item) => item.id === todoId);
     if (!todo) return;
 
@@ -101,7 +101,7 @@ export class NoteHistory {
   }
 
   insertTodo(note: Note, todo: TodoItem): void {
-    this.flushTextChange(note);
+    this.flushTextChange();
     const patch: NotePatch = {
       type: 'todo-inserted',
       index: note.todos.length,
@@ -112,7 +112,7 @@ export class NoteHistory {
   }
 
   removeTodo(note: Note, todoId: string): void {
-    this.flushTextChange(note);
+    this.flushTextChange();
     const index = note.todos.findIndex((item) => item.id === todoId);
     if (index < 0) return;
 
@@ -133,7 +133,7 @@ export class NoteHistory {
   }
 
   undo(note: Note): boolean {
-    this.flushTextChange(note);
+    this.flushTextChange();
     if (this.cursor === 0) return false;
 
     this.cursor -= 1;
@@ -142,7 +142,7 @@ export class NoteHistory {
   }
 
   redo(note: Note): boolean {
-    this.flushTextChange(note);
+    this.flushTextChange();
     if (this.cursor >= this.patches.length) return false;
 
     applyPatch(note, this.patches[this.cursor]!);
@@ -156,9 +156,9 @@ export class NoteHistory {
     this.pendingText = null;
   }
 
-  private updateText(note: Note, patch: TextPatch): void {
+  private updateText(patch: TextPatch): void {
     if (this.pendingText && patchKey(this.pendingText) !== patchKey(patch)) {
-      this.flushTextChange(note);
+      this.flushTextChange();
     }
 
     if (!this.pendingText) {

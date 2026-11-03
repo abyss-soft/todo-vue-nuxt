@@ -10,7 +10,6 @@
     "test": "nuxt prepare && vitest run",
     "typecheck": "nuxt prepare && nuxt typecheck",
     "lint": "eslint . --ext .js,.ts,.vue",
-    "lint:styles": "stylelint \"**/*.{vue,scss,css}\"",
     "format:check": "prettier --check ."
   },
   "dependencies": {

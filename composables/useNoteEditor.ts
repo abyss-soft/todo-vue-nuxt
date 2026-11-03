@@ -109,7 +109,7 @@ export function useNoteEditor(routeId: Ref<string>) {
   function flushTextChange(): void {
     if (textTimer) clearTimeout(textTimer);
     textTimer = undefined;
-    if (note.value) history.flushTextChange(note.value);
+    if (note.value) history.flushTextChange();
   }
 
   function persistDraftNow(): void {
