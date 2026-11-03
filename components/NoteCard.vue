@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {Note} from "~/types/note";
+import type { Note } from '~/types/note';
 
 defineProps<{
   note: Note;
@@ -20,14 +20,14 @@ const PREVIEW_LIMIT = 3;
         <span>{{ note.todos.length }}</span>
       </div>
       <ul
-          v-if="note.todos.length"
-          class="note-card__todos"
-          aria-label="Пункты заметки"
+        v-if="note.todos.length"
+        class="note-card__todos"
+        aria-label="Пункты заметки"
       >
         <li
-            v-for="todo in note.todos.slice(0, PREVIEW_LIMIT)"
-            :key="todo.id"
-            :class="{ 'is-completed': todo.completed }"
+          v-for="todo in note.todos.slice(0, PREVIEW_LIMIT)"
+          :key="todo.id"
+          :class="{ 'is-completed': todo.completed }"
         >
           <span class="todo-check" aria-hidden="true">
             <span v-if="todo.completed">&#10004;</span>
@@ -41,23 +41,22 @@ const PREVIEW_LIMIT = 3;
       <p v-else class="note-card__empty">Пока нет пунктов</p>
     </NuxtLink>
     <div class="note-card__footer">
-      <time :datetime="note.updatedAt">{{
-          new Date(note.updatedAt).toLocaleDateString("ru-RU")
-        }}
+      <time :datetime="note.updatedAt"
+        >{{ new Date(note.updatedAt).toLocaleDateString('ru-RU') }}
       </time>
       <div class="note-card__actions">
         <NuxtLink
-            class="icon-button"
-            :to="`/notes/${note.id}`"
-            :aria-label="`Изменить: ${note.title}`"
+          class="icon-button"
+          :to="`/notes/${note.id}`"
+          :aria-label="`Изменить: ${note.title}`"
         >
           <span aria-hidden="true">&#x270E;</span>
         </NuxtLink>
         <button
-            class="icon-button"
-            type="button"
-            :aria-label="`Удалить: ${note.title}`"
-            @click="$emit('remove', note.id)"
+          class="icon-button"
+          type="button"
+          :aria-label="`Удалить: ${note.title}`"
+          @click="$emit('remove', note.id)"
         >
           <span aria-hidden="true">&#128465;</span>
         </button>
@@ -75,8 +74,10 @@ const PREVIEW_LIMIT = 3;
   border: 1px solid var(--line);
   border-radius: 15px;
   background: var(--surface);
-  transition: border-color 160ms ease, transform 160ms ease,
-  box-shadow 160ms ease;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
 
   &:hover {
     transform: translateY(-2px);
@@ -168,7 +169,7 @@ const PREVIEW_LIMIT = 3;
 
 .todo-check {
   display: grid;
-  color: #fff;
+  color: var(--surface);
   width: 16px;
   height: 16px;
   flex: 0 0 16px;

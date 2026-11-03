@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useNoteEditor } from '~/composables/useNoteEditor'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useNoteEditor } from '~/composables/useNoteEditor';
 
-const route = useRoute()
-const routeId = computed(() => String(route.params.id ?? ''))
+const route = useRoute();
+const routeId = computed(() => String(route.params.id ?? ''));
 const {
   note,
   isNewSession,
@@ -32,64 +32,70 @@ const {
   cancel: cancelEdit,
   removeCurrentNote,
   recoverAsNew,
-} = useNoteEditor(routeId)
-const activeDialog = ref<'draft' | 'cancel' | 'delete' | 'conflict' | 'deleted' | null>(null)
+} = useNoteEditor(routeId);
+const activeDialog = ref<
+  'draft' | 'cancel' | 'delete' | 'conflict' | 'deleted' | null
+>(null);
 
 function handleGlobalUndo(event: KeyboardEvent): void {
-  if (activeDialog.value) return
-  if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z') return
+  if (activeDialog.value) return;
+  if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== 'z')
+    return;
 
-  const target = event.target
-  const isTextEditing = target instanceof HTMLElement
-      && (target.isContentEditable
-          || target instanceof HTMLTextAreaElement
-          || (target instanceof HTMLInputElement && target.type !== 'checkbox' && target.type !== 'button'))
+  const target = event.target;
+  const isTextEditing =
+    target instanceof HTMLElement &&
+    (target.isContentEditable ||
+      target instanceof HTMLTextAreaElement ||
+      (target instanceof HTMLInputElement &&
+        target.type !== 'checkbox' &&
+        target.type !== 'button'));
 
-  if (isTextEditing) return
+  if (isTextEditing) return;
 
-  event.preventDefault()
-  if (event.shiftKey) redo()
-  else undo()
+  event.preventDefault();
+  if (event.shiftKey) redo();
+  else undo();
 }
 
 watch(pendingDraft, (draft) => {
-  if (draft) activeDialog.value = 'draft'
-})
+  if (draft) activeDialog.value = 'draft';
+});
 
 watch(conflictState, (conflict) => {
-  if (conflict === 'deleted') activeDialog.value = 'deleted'
-  else if (conflict === 'updated') activeDialog.value = 'conflict'
-})
+  if (conflict === 'deleted') activeDialog.value = 'deleted';
+  else if (conflict === 'updated') activeDialog.value = 'conflict';
+});
 
-onMounted(() => window.addEventListener('keydown', handleGlobalUndo))
-onBeforeUnmount(() => window.removeEventListener('keydown', handleGlobalUndo))
+onMounted(() => window.addEventListener('keydown', handleGlobalUndo));
+onBeforeUnmount(() => window.removeEventListener('keydown', handleGlobalUndo));
 
 async function save(): Promise<void> {
-  const saved = await saveNote()
-  if (saved) activeDialog.value = null
+  const saved = await saveNote();
+  if (saved) activeDialog.value = null;
 }
 
 async function cancel(): Promise<void> {
-  activeDialog.value = null
-  await cancelEdit()
+  activeDialog.value = null;
+  await cancelEdit();
 }
 
 async function requestCancel(): Promise<void> {
   if (isDirty.value) {
-    activeDialog.value = 'cancel'
-    return
+    activeDialog.value = 'cancel';
+    return;
   }
-  await cancelEdit()
+  await cancelEdit();
 }
 
 async function deleteNote(): Promise<void> {
-  const deleted = await removeCurrentNote()
-  if (deleted) activeDialog.value = null
+  const deleted = await removeCurrentNote();
+  if (deleted) activeDialog.value = null;
 }
 
 async function goHome(): Promise<void> {
-  activeDialog.value = null
-  await navigateTo('/')
+  activeDialog.value = null;
+  await navigateTo('/');
 }
 </script>
 
@@ -102,111 +108,224 @@ async function goHome(): Promise<void> {
   </main>
 
   <NoteEditor
-      v-else-if="note"
-      :note="note"
-      :can-undo="canUndo"
-      :can-redo="canRedo"
-      :is-new="isNewSession"
-      :error-message="errorMessage"
-      :invalid-field="invalidField"
-      :save-status="saveStatus"
-      @update:title="setTitle"
-      @update:todo-text="setTodoText"
-      @update:todo-completed="toggleTodo"
-      @add:todo="addTodo"
-      @remove:todo="removeTodo"
-      @flush:text="flushTextChange"
-      @undo="undo"
-      @redo="redo"
-      @save="save"
-      @cancel="requestCancel"
-      @delete="activeDialog = 'delete'"
+    v-else-if="note"
+    :note="note"
+    :can-undo="canUndo"
+    :can-redo="canRedo"
+    :is-new="isNewSession"
+    :error-message="errorMessage"
+    :invalid-field="invalidField"
+    :save-status="saveStatus"
+    @update:title="setTitle"
+    @update:todo-text="setTodoText"
+    @update:todo-completed="toggleTodo"
+    @add:todo="addTodo"
+    @remove:todo="removeTodo"
+    @flush:text="flushTextChange"
+    @undo="undo"
+    @redo="redo"
+    @save="save"
+    @cancel="requestCancel"
+    @delete="activeDialog = 'delete'"
   />
 
   <button
-      v-if="pendingDraft && activeDialog !== 'draft'"
-      class="draft-banner"
-      type="button"
-      @click="activeDialog = 'draft'"
+    v-if="pendingDraft && activeDialog !== 'draft'"
+    class="draft-banner"
+    type="button"
+    @click="activeDialog = 'draft'"
   >
     Найден несохранённый черновик — выбрать действие
   </button>
   <button
-      v-if="conflictState && activeDialog !== (conflictState === 'deleted' ? 'deleted' : 'conflict')"
-      class="draft-banner"
-      type="button"
-      @click="activeDialog = conflictState === 'deleted' ? 'deleted' : 'conflict'"
+    v-if="
+      conflictState &&
+      activeDialog !== (conflictState === 'deleted' ? 'deleted' : 'conflict')
+    "
+    class="draft-banner"
+    type="button"
+    @click="activeDialog = conflictState === 'deleted' ? 'deleted' : 'conflict'"
   >
-    {{ conflictState === 'deleted' ? 'Заметка удалена в другой вкладке' : 'Заметка изменилась в другой вкладке' }}
+    {{
+      conflictState === 'deleted'
+        ? 'Заметка удалена в другой вкладке'
+        : 'Заметка изменилась в другой вкладке'
+    }}
   </button>
 
-  <AppModal v-if="activeDialog === 'draft' && pendingDraft" label="Восстановление черновика" @close="activeDialog = null">
+  <AppModal
+    v-if="activeDialog === 'draft' && pendingDraft"
+    label="Восстановление черновика"
+    @close="activeDialog = null"
+  >
     <div class="dialog-symbol" aria-hidden="true">↻</div>
     <h2 class="dialog-title">
-      {{ draftConflicts ? 'Черновик требует внимания' : 'Восстановить черновик?' }}
+      {{
+        draftConflicts ? 'Черновик требует внимания' : 'Восстановить черновик?'
+      }}
     </h2>
     <p class="dialog-copy">
       <template v-if="pendingDraft.noteId && !note">
-        Исходная заметка уже удалена. Черновик можно восстановить как новую заметку.
+        Исходная заметка уже удалена. Черновик можно восстановить как новую
+        заметку.
       </template>
       <template v-else-if="draftConflicts">
-        Сохранённая заметка изменилась после создания черновика. Можно оставить её или продолжить с черновиком.
+        Сохранённая заметка изменилась после создания черновика. Можно оставить
+        её или продолжить с черновиком.
       </template>
       <template v-else>
-        Найдены несохранённые изменения от {{ new Date(pendingDraft.savedAt).toLocaleString('ru-RU') }}.
+        Найдены несохранённые изменения от
+        {{ new Date(pendingDraft.savedAt).toLocaleString('ru-RU') }}.
       </template>
     </p>
     <div class="dialog-actions">
-      <button class="action-button action-button--secondary" type="button" @click="discardPendingDraft(); activeDialog = null">
+      <button
+        class="action-button action-button--secondary"
+        type="button"
+        @click="
+          discardPendingDraft();
+          activeDialog = null;
+        "
+      >
         {{ draftConflicts ? 'Оставить сохранённую' : 'Удалить черновик' }}
       </button>
-      <button class="action-button action-button--primary" type="button" @click="restorePendingDraft(); activeDialog = null">
-        {{ pendingDraft.noteId && !note ? 'Восстановить как новую' : draftConflicts ? 'Продолжить с черновиком' : 'Восстановить' }}
+      <button
+        class="action-button action-button--primary"
+        type="button"
+        @click="
+          restorePendingDraft();
+          activeDialog = null;
+        "
+      >
+        {{
+          pendingDraft.noteId && !note
+            ? 'Восстановить как новую'
+            : draftConflicts
+              ? 'Продолжить с черновиком'
+              : 'Восстановить'
+        }}
       </button>
     </div>
   </AppModal>
 
-  <AppModal v-if="activeDialog === 'cancel'" label="Отмена редактирования" @close="activeDialog = null">
+  <AppModal
+    v-if="activeDialog === 'cancel'"
+    label="Отмена редактирования"
+    @close="activeDialog = null"
+  >
     <div class="dialog-symbol dialog-symbol--warning" aria-hidden="true">!</div>
     <h2 class="dialog-title">Отменить редактирование?</h2>
-    <p class="dialog-copy">Несохранённые изменения будут удалены. Это действие нельзя отменить.</p>
+    <p class="dialog-copy">
+      Несохранённые изменения будут удалены. Это действие нельзя отменить.
+    </p>
     <div class="dialog-actions">
-      <button class="action-button action-button--secondary" type="button" @click="activeDialog = null">Продолжить</button>
-      <button class="action-button action-button--danger" type="button" @click="cancel">Отменить изменения</button>
+      <button
+        class="action-button action-button--secondary"
+        type="button"
+        @click="activeDialog = null"
+      >
+        Продолжить
+      </button>
+      <button
+        class="action-button action-button--danger"
+        type="button"
+        @click="cancel"
+      >
+        Отменить изменения
+      </button>
     </div>
   </AppModal>
 
-  <AppModal v-if="activeDialog === 'delete'" label="Подтверждение удаления заметки" @close="activeDialog = null">
+  <AppModal
+    v-if="activeDialog === 'delete'"
+    label="Подтверждение удаления заметки"
+    @close="activeDialog = null"
+  >
     <div class="dialog-symbol dialog-symbol--warning" aria-hidden="true">⌫</div>
     <h2 class="dialog-title">Удалить заметку?</h2>
-    <p class="dialog-copy">Заметка будет удалена без возможности восстановления.</p>
+    <p class="dialog-copy">
+      Заметка будет удалена без возможности восстановления.
+    </p>
     <div class="dialog-actions">
-      <button class="action-button action-button--secondary" type="button" @click="activeDialog = null">Оставить</button>
-      <button class="action-button action-button--danger" type="button" @click="deleteNote">Удалить</button>
+      <button
+        class="action-button action-button--secondary"
+        type="button"
+        @click="activeDialog = null"
+      >
+        Оставить
+      </button>
+      <button
+        class="action-button action-button--danger"
+        type="button"
+        @click="deleteNote"
+      >
+        Удалить
+      </button>
     </div>
   </AppModal>
 
-  <AppModal v-if="activeDialog === 'deleted'" label="Заметка удалена в другой вкладке" @close="goHome">
+  <AppModal
+    v-if="activeDialog === 'deleted'"
+    label="Заметка удалена в другой вкладке"
+    @close="goHome"
+  >
     <div class="dialog-symbol dialog-symbol--warning" aria-hidden="true">!</div>
     <h2 class="dialog-title">Заметка удалена в другой вкладке</h2>
-    <p class="dialog-copy">Ваши изменения пока сохранены на этой странице. Можно восстановить их как новую заметку.</p>
+    <p class="dialog-copy">
+      Ваши изменения пока сохранены на этой странице. Можно восстановить их как
+      новую заметку.
+    </p>
     <div class="dialog-actions">
-      <button class="action-button action-button--secondary" type="button" @click="goHome">К списку</button>
-      <button class="action-button action-button--primary" type="button" @click="recoverAsNew(); activeDialog = null">
+      <button
+        class="action-button action-button--secondary"
+        type="button"
+        @click="goHome"
+      >
+        К списку
+      </button>
+      <button
+        class="action-button action-button--primary"
+        type="button"
+        @click="
+          recoverAsNew();
+          activeDialog = null;
+        "
+      >
         Сохранить как новую
       </button>
     </div>
   </AppModal>
 
-  <AppModal v-if="activeDialog === 'conflict'" label="Заметка изменилась в другой вкладке" @close="activeDialog = null">
+  <AppModal
+    v-if="activeDialog === 'conflict'"
+    label="Заметка изменилась в другой вкладке"
+    @close="activeDialog = null"
+  >
     <div class="dialog-symbol dialog-symbol--warning" aria-hidden="true">↻</div>
     <h2 class="dialog-title">Заметка изменилась в другой вкладке</h2>
-    <p class="dialog-copy">Выберите, какую версию оставить. Ваши изменения можно сохранить отдельно как новую заметку.</p>
+    <p class="dialog-copy">
+      Выберите, какую версию оставить. Ваши изменения можно сохранить отдельно
+      как новую заметку.
+    </p>
     <div class="dialog-actions">
-      <button class="action-button action-button--secondary" type="button" @click="resolveConflict('reload'); activeDialog = null">
+      <button
+        class="action-button action-button--secondary"
+        type="button"
+        @click="
+          resolveConflict('reload');
+          activeDialog = null;
+        "
+      >
         Загрузить сохранённую
       </button>
-      <button class="action-button action-button--primary" type="button" @click="resolveConflict('recover'); activeDialog = null">
+      <button
+        class="action-button action-button--primary"
+        type="button"
+        @click="
+          resolveConflict('recover');
+          activeDialog = null;
+        "
+      >
         Мою версию как новую
       </button>
     </div>

@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import NoteCard from "@/components/NoteCard.vue";
-import { useNotesStore } from '~/stores/notes'
+import { ref } from 'vue';
+import NoteCard from '@/components/NoteCard.vue';
+import { useNotesStore } from '~/stores/notes';
 
-const store = useNotesStore()
-const noteToDelete = ref<string | null>(null)
-const deletionError = ref<string | null>(null)
+const store = useNotesStore();
+const noteToDelete = ref<string | null>(null);
+const deletionError = ref<string | null>(null);
 
-const targetNote = computed(() => store.findNote(noteToDelete.value ?? ''))
+const targetNote = computed(() => store.findNote(noteToDelete.value ?? ''));
 
 function openDelete(id: string): void {
-  deletionError.value = null
-  noteToDelete.value = id
+  deletionError.value = null;
+  noteToDelete.value = id;
 }
 
 function confirmDelete(): void {
-  if (!noteToDelete.value) return
+  if (!noteToDelete.value) return;
 
-  const result = store.deleteNote(noteToDelete.value)
+  const result = store.deleteNote(noteToDelete.value);
   if (result.status === 'storage-error') {
-    deletionError.value = result.message
+    deletionError.value = result.message;
   } else {
-    noteToDelete.value = null
-    deletionError.value = null
+    noteToDelete.value = null;
+    deletionError.value = null;
   }
 }
 </script>
@@ -33,7 +33,9 @@ function confirmDelete(): void {
       <div>
         <p class="eyebrow">ВАШЕ ПРОСТРАНСТВО</p>
         <h1 data-page-focus tabindex="-1">Заметки</h1>
-        <p class="page-heading__description">Соберите важные мысли и планы в одном месте.</p>
+        <p class="page-heading__description">
+          Соберите важные мысли и планы в одном месте.
+        </p>
       </div>
       <NuxtLink class="create-button" to="/notes/new">
         <span aria-hidden="true">+</span>
@@ -41,22 +43,32 @@ function confirmDelete(): void {
       </NuxtLink>
     </div>
 
-    <section v-if="store.sortedNotes.length" class="notes-grid" aria-label="Все заметки">
+    <section
+      v-if="store.sortedNotes.length"
+      class="notes-grid"
+      aria-label="Все заметки"
+    >
       <NoteCard
-          v-for="note in store.sortedNotes"
-          :key="note.id"
-          :note="note"
-          @remove="openDelete"
+        v-for="note in store.sortedNotes"
+        :key="note.id"
+        :note="note"
+        @remove="openDelete"
       />
     </section>
 
     <section v-else class="empty-state">
       <h2>Пока здесь тихо</h2>
       <p>Создайте первую заметку — и добавьте к ней список дел.</p>
-      <NuxtLink class="button-primary" to="/notes/new">Создать заметку</NuxtLink>
+      <NuxtLink class="button-primary" to="/notes/new"
+        >Создать заметку</NuxtLink
+      >
     </section>
 
-    <AppModal v-if="noteToDelete" label="Подтверждение удаления заметки" @close="noteToDelete = null">
+    <AppModal
+      v-if="noteToDelete"
+      label="Подтверждение удаления заметки"
+      @close="noteToDelete = null"
+    >
       <div class="confirm-icon confirm-icon--danger" aria-hidden="true">
         <span>!</span>
       </div>
@@ -64,10 +76,20 @@ function confirmDelete(): void {
       <p class="modal-copy">
         «{{ targetNote?.title }}» будет удалена без возможности восстановления.
       </p>
-      <p v-if="deletionError" class="modal-error" role="alert">{{ deletionError }}</p>
+      <p v-if="deletionError" class="modal-error" role="alert">
+        {{ deletionError }}
+      </p>
       <div class="modal-actions">
-        <button class="button-secondary" type="button" @click="noteToDelete = null">Оставить</button>
-        <button class="button-danger" type="button" @click="confirmDelete">Удалить</button>
+        <button
+          class="button-secondary"
+          type="button"
+          @click="noteToDelete = null"
+        >
+          Оставить
+        </button>
+        <button class="button-danger" type="button" @click="confirmDelete">
+          Удалить
+        </button>
       </div>
     </AppModal>
   </main>
@@ -125,7 +147,9 @@ function confirmDelete(): void {
   font-size: 13px;
   font-weight: 620;
   text-decoration: none;
-  transition: background 140ms ease, transform 140ms ease;
+  transition:
+    background 140ms ease,
+    transform 140ms ease;
 
   &:hover {
     transform: translateY(-1px);

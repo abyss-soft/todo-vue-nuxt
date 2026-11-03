@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { TodoItem } from '~/types/note'
+import type { TodoItem } from '~/types/note';
 
 defineProps<{
-  todos: TodoItem[]
-  editable?: boolean
-  invalidField?: string | null
-  errorId?: string
-}>()
+  todos: TodoItem[];
+  editable?: boolean;
+  invalidField?: string | null;
+  errorId?: string;
+}>();
 
 defineEmits<{
-  'update:text': [id: string, value: string]
-  'update:completed': [id: string]
-  remove: [id: string]
-  'flush:text': []
-}>()
+  'update:text': [id: string, value: string];
+  'update:completed': [id: string];
+  remove: [id: string];
+  'flush:text': [];
+}>();
 </script>
 
 <template>
@@ -26,7 +26,7 @@ defineEmits<{
         :disabled="!editable"
         :aria-label="`${todo.completed ? 'Снять отметку' : 'Отметить'}: ${todo.text || 'пустой пункт'}`"
         @change="$emit('update:completed', todo.id)"
-      >
+      />
       <input
         v-if="editable"
         class="todo-row__text"
@@ -34,12 +34,24 @@ defineEmits<{
         :value="todo.text"
         :aria-label="`Текст пункта ${todo.text || 'без названия'}`"
         :aria-invalid="invalidField === `todo:${todo.id}`"
-        :aria-describedby="invalidField === `todo:${todo.id}` ? errorId : undefined"
+        :aria-describedby="
+          invalidField === `todo:${todo.id}` ? errorId : undefined
+        "
         placeholder="Что нужно сделать?"
-        @input="$emit('update:text', todo.id, ($event.target as HTMLInputElement).value)"
+        @input="
+          $emit(
+            'update:text',
+            todo.id,
+            ($event.target as HTMLInputElement).value,
+          )
+        "
         @blur="$emit('flush:text')"
+      />
+      <span
+        v-else
+        class="todo-row__text"
+        :class="{ 'is-completed': todo.completed }"
       >
-      <span v-else class="todo-row__text" :class="{ 'is-completed': todo.completed }">
         {{ todo.text }}
       </span>
       <button

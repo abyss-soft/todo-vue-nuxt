@@ -1,42 +1,42 @@
 export interface TodoItem {
-  id: string
-  text: string
-  completed: boolean
+  id: string;
+  text: string;
+  completed: boolean;
 }
 
 export interface Note {
-  id: string
-  title: string
-  todos: TodoItem[]
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  todos: TodoItem[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface NoteDraft {
-  version: 1
-  noteId: string | null
-  baseUpdatedAt: string | null
-  note: Note
-  savedAt: string
+  version: 1;
+  noteId: string | null;
+  baseUpdatedAt: string | null;
+  note: Note;
+  savedAt: string;
 }
 
 export interface PersistedNotes {
-  version: 2
-  notes: Note[]
+  version: 2;
+  notes: Note[];
 }
 
 export type SaveNoteResult =
-    | { status: 'saved'; note: Note }
-    | { status: 'conflict' }
-    | { status: 'missing' }
-    | { status: 'storage-error'; message: string }
+  | { status: 'saved'; note: Note }
+  | { status: 'conflict' }
+  | { status: 'missing' }
+  | { status: 'storage-error'; message: string };
 
 export type DeleteNoteResult =
-    | { status: 'deleted' }
-    | { status: 'missing' }
-    | { status: 'storage-error'; message: string }
+  | { status: 'deleted' }
+  | { status: 'missing' }
+  | { status: 'storage-error'; message: string };
 
 export interface ReadResult<T> {
-  value: T
-  error: string | null
+  value: T;
+  error: string | null;
 }

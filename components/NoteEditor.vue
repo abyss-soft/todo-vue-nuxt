@@ -1,29 +1,29 @@
 <script setup lang="ts">
-import type { Note } from '~/types/note'
+import type { Note } from '~/types/note';
 
 defineProps<{
-  note: Note
-  canUndo: boolean
-  canRedo: boolean
-  isNew: boolean
-  errorMessage: string | null
-  invalidField: string | null
-  saveStatus: 'idle' | 'saved'
-}>()
+  note: Note;
+  canUndo: boolean;
+  canRedo: boolean;
+  isNew: boolean;
+  errorMessage: string | null;
+  invalidField: string | null;
+  saveStatus: 'idle' | 'saved';
+}>();
 
 const emit = defineEmits<{
-  'update:title': [value: string]
-  'update:todo-text': [id: string, value: string]
-  'update:todo-completed': [id: string]
-  'add:todo': []
-  'remove:todo': [id: string]
-  'flush:text': []
-  undo: []
-  redo: []
-  save: []
-  cancel: []
-  delete: []
-}>()
+  'update:title': [value: string];
+  'update:todo-text': [id: string, value: string];
+  'update:todo-completed': [id: string];
+  'add:todo': [];
+  'remove:todo': [id: string];
+  'flush:text': [];
+  undo: [];
+  redo: [];
+  save: [];
+  cancel: [];
+  delete: [];
+}>();
 </script>
 
 <template>
@@ -63,7 +63,11 @@ const emit = defineEmits<{
       <div class="editor-card__eyebrow">
         <span>{{ isNew ? 'НОВАЯ ЗАМЕТКА' : 'РЕДАКТИРОВАНИЕ' }}</span>
         <span class="save-hint">
-          {{ saveStatus === 'saved' ? 'Сохранено' : 'Изменения сохраняются по кнопке' }}
+          {{
+            saveStatus === 'saved'
+              ? 'Сохранено'
+              : 'Изменения сохраняются по кнопке'
+          }}
         </span>
       </div>
 
@@ -80,14 +84,17 @@ const emit = defineEmits<{
         :aria-describedby="invalidField === 'title' ? 'form-error' : undefined"
         @input="emit('update:title', ($event.target as HTMLInputElement).value)"
         @blur="emit('flush:text')"
-      >
+      />
 
       <div class="todo-heading">
         <div>
           <h1>Список дел</h1>
           <p>Разложите планы на небольшие шаги.</p>
         </div>
-        <span>{{ note.todos.filter(todo => todo.completed).length }} из {{ note.todos.length }}</span>
+        <span
+          >{{ note.todos.filter((todo) => todo.completed).length }} из
+          {{ note.todos.length }}</span
+        >
       </div>
 
       <TodoList
@@ -96,8 +103,8 @@ const emit = defineEmits<{
         :invalid-field="invalidField"
         error-id="form-error"
         @update:text="(id, value) => emit('update:todo-text', id, value)"
-        @update:completed="id => emit('update:todo-completed', id)"
-        @remove="id => emit('remove:todo', id)"
+        @update:completed="(id) => emit('update:todo-completed', id)"
+        @remove="(id) => emit('remove:todo', id)"
         @flush:text="emit('flush:text')"
       />
 
@@ -106,7 +113,9 @@ const emit = defineEmits<{
         Добавить пункт
       </button>
 
-      <p v-if="errorMessage" id="form-error" class="form-error" role="alert">{{ errorMessage }}</p>
+      <p v-if="errorMessage" id="form-error" class="form-error" role="alert">
+        {{ errorMessage }}
+      </p>
 
       <footer class="editor-card__footer">
         <button
@@ -119,7 +128,11 @@ const emit = defineEmits<{
         </button>
         <span v-else />
         <div class="editor-card__footer-actions">
-          <button class="button button--secondary" type="button" @click="emit('cancel')">
+          <button
+            class="button button--secondary"
+            type="button"
+            @click="emit('cancel')"
+          >
             Отменить
           </button>
           <button
@@ -131,7 +144,9 @@ const emit = defineEmits<{
           </button>
         </div>
       </footer>
-      <p v-if="saveStatus === 'saved'" class="save-status" role="status">Изменения сохранены</p>
+      <p v-if="saveStatus === 'saved'" class="save-status" role="status">
+        Изменения сохранены
+      </p>
     </section>
   </main>
 </template>
@@ -320,14 +335,17 @@ const emit = defineEmits<{
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 130ms ease, color 130ms ease, border-color 130ms ease;
+  transition:
+    background 130ms ease,
+    color 130ms ease,
+    border-color 130ms ease;
 
   &:disabled {
     color: #b6b9b6;
     cursor: not-allowed;
   }
 
-  > span[aria-hidden="true"] {
+  > span[aria-hidden='true'] {
     font-size: 17px;
     line-height: 1;
   }
