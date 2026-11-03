@@ -40,3 +40,7 @@ export interface ReadResult<T> {
   value: T;
   error: string | null;
 }
+
+export interface NotesReadResult extends ReadResult<Note[]> {
+  exportableData?: string;
+}

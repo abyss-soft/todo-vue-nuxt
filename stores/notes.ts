@@ -23,6 +23,7 @@ export const useNotesStore = defineStore('notes', {
     notes: [] as Note[],
     initialized: false,
     storageError: null as string | null,
+    storageExportData: null as string | null,
   }),
 
   getters: {
@@ -37,6 +38,7 @@ export const useNotesStore = defineStore('notes', {
       const result = readNotes();
       this.notes = result.value.map(cloneNote);
       this.storageError = result.error;
+      this.storageExportData = result.exportableData ?? null;
       this.initialized = true;
     },
 
@@ -48,20 +50,24 @@ export const useNotesStore = defineStore('notes', {
       if (raw === null) {
         this.notes = [];
         this.storageError = null;
+        this.storageExportData = null;
         return;
       }
 
       const result = parseNotes(raw);
       this.notes = result.value.map(cloneNote);
       this.storageError = result.error;
+      this.storageExportData = result.exportableData ?? null;
     },
 
     saveNote(note: Note, expectedUpdatedAt: string | null): SaveNoteResult {
       const persisted = readNotes();
       if (persisted.error) {
         this.storageError = persisted.error;
+        this.storageExportData = persisted.exportableData ?? null;
         return { status: 'storage-error', message: persisted.error };
       }
+      this.storageExportData = null;
 
       const notes = persisted.value;
       const existing = notes.find((item) => item.id === note.id);
@@ -99,8 +105,10 @@ export const useNotesStore = defineStore('notes', {
       const persisted = readNotes();
       if (persisted.error) {
         this.storageError = persisted.error;
+        this.storageExportData = persisted.exportableData ?? null;
         return { status: 'storage-error', message: persisted.error };
       }
+      this.storageExportData = null;
 
       if (!persisted.value.some((note) => note.id === id)) {
         this.notes = persisted.value.map(cloneNote);

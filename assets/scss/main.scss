@@ -65,6 +65,8 @@ input:focus-visible {
   z-index: 10;
   right: 20px;
   bottom: 20px;
+  display: grid;
+  gap: 10px;
   max-width: min(420px, calc(100vw - 40px));
   padding: 13px 16px;
   border: 1px solid #e6d9bb;
@@ -74,4 +76,16 @@ input:focus-visible {
   color: #735a26;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.global-storage-error__export {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
 }

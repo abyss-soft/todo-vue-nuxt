@@ -52,10 +52,12 @@ describe('notes persistence', () => {
     expect(parseNotes(raw)).toEqual({
       value: [],
       error: 'Версия хранилища заметок не поддерживается.',
+      exportableData: raw,
     });
     expect(readNotes(storage)).toEqual({
       value: [],
       error: 'Версия хранилища заметок не поддерживается.',
+      exportableData: raw,
     });
     expect(storage.getItem(NOTES_STORAGE_KEY)).toBe(raw);
   });

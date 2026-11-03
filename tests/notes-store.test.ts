@@ -63,4 +63,18 @@ describe('notes store', () => {
 
     expect(store.findNote(note.id)).toBeUndefined();
   });
+
+  it('keeps unsupported version data available for export', () => {
+    const store = useNotesStore();
+    const raw = JSON.stringify({ version: 3, notes: [] });
+    localStorage.setItem(NOTES_STORAGE_KEY, raw);
+
+    store.hydrate();
+
+    expect(store.storageError).toBe(
+      'Версия хранилища заметок не поддерживается.',
+    );
+    expect(store.storageExportData).toBe(raw);
+    expect(localStorage.getItem(NOTES_STORAGE_KEY)).toBe(raw);
+  });
 });

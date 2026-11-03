@@ -1,4 +1,10 @@
-import type { Note, NoteDraft, PersistedNotes, ReadResult } from '~/types/note';
+import type {
+  Note,
+  NoteDraft,
+  NotesReadResult,
+  PersistedNotes,
+  ReadResult,
+} from '~/types/note';
 
 export interface StorageLike {
   getItem(key: string): string | null;
@@ -45,7 +51,7 @@ function isNote(value: unknown): value is Note {
   );
 }
 
-export function parseNotes(raw: string): ReadResult<Note[]> {
+export function parseNotes(raw: string): NotesReadResult {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
@@ -61,7 +67,11 @@ export function parseNotes(raw: string): ReadResult<Note[]> {
   }
 
   if (parsed.version !== NOTES_SCHEMA_VERSION) {
-    return { value: [], error: 'Версия хранилища заметок не поддерживается.' };
+    return {
+      value: [],
+      error: 'Версия хранилища заметок не поддерживается.',
+      exportableData: raw,
+    };
   }
 
   if (!Array.isArray(parsed.notes) || !parsed.notes.every(isNote)) {
@@ -88,7 +98,7 @@ export function draftStorageKey(tabId: string, routeId: string): string {
 
 export function readNotes(
   storage: StorageLike | null = browserStorage(),
-): ReadResult<Note[]> {
+): NotesReadResult {
   if (!storage) {
     return {
       value: [],
