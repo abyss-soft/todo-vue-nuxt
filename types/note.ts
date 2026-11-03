@@ -11,3 +11,24 @@ export interface Note {
   createdAt: string
   updatedAt: string
 }
+
+export interface PersistedNotes {
+  version: 2
+  notes: Note[]
+}
+
+export type SaveNoteResult =
+    | { status: 'saved'; note: Note }
+    | { status: 'conflict' }
+    | { status: 'missing' }
+    | { status: 'storage-error'; message: string }
+
+export type DeleteNoteResult =
+    | { status: 'deleted' }
+    | { status: 'missing' }
+    | { status: 'storage-error'; message: string }
+
+export interface ReadResult<T> {
+  value: T
+  error: string | null
+}
