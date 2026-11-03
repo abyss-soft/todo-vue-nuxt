@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 import NoteCard from "@/components/NoteCard.vue";
-import { useNotesStore } from '~/stores/notes'
+import {useNotesStore} from '~/stores/notes'
 
 const store = useNotesStore()
 const noteToDelete = ref<string | null>(null)
@@ -145,7 +145,7 @@ function confirmDelete(): void {
     place-items: center;
     border: 1px solid var(--line);
     border-radius: 19px;
-    background: #fff;
+    background: var(--surface);
     color: #7d9789;
 
     span {
@@ -214,7 +214,7 @@ function confirmDelete(): void {
   padding: 0 13px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
   color: #51575a;
   font: inherit;
   font-size: 12px;

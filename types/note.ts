@@ -12,6 +12,14 @@ export interface Note {
   updatedAt: string
 }
 
+export interface NoteDraft {
+  version: 1
+  noteId: string | null
+  baseUpdatedAt: string | null
+  note: Note
+  savedAt: string
+}
+
 export interface PersistedNotes {
   version: 2
   notes: Note[]
