@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import { ref } from 'vue'
 import NoteCard from "@/components/NoteCard.vue";
-import {useNotesStore} from '~/stores/notes'
+import { useNotesStore } from '~/stores/notes'
 
 const store = useNotesStore()
 const noteToDelete = ref<string | null>(null)
@@ -55,6 +55,21 @@ function confirmDelete(): void {
       <p>Создайте первую заметку — и добавьте к ней список дел.</p>
       <NuxtLink class="button-primary" to="/notes/new">Создать заметку</NuxtLink>
     </section>
+
+    <AppModal v-if="noteToDelete" label="Подтверждение удаления заметки" @close="noteToDelete = null">
+      <div class="confirm-icon confirm-icon--danger" aria-hidden="true">
+        <span>!</span>
+      </div>
+      <h2 class="modal-title">Удалить заметку?</h2>
+      <p class="modal-copy">
+        «{{ targetNote?.title }}» будет удалена без возможности восстановления.
+      </p>
+      <p v-if="deletionError" class="modal-error" role="alert">{{ deletionError }}</p>
+      <div class="modal-actions">
+        <button class="button-secondary" type="button" @click="noteToDelete = null">Оставить</button>
+        <button class="button-danger" type="button" @click="confirmDelete">Удалить</button>
+      </div>
+    </AppModal>
   </main>
 </template>
 
